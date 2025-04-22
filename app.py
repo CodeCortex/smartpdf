@@ -22,7 +22,7 @@ llm = GoogleGenerativeAI(
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-def get_pdf_text(pdf_docs):
+def convert_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
         reader = PdfReader(pdf)
@@ -32,7 +32,7 @@ def get_pdf_text(pdf_docs):
                 text += page_text
     return text
 
-def get_text_chunks(text):
+def convert_text_to_textChunk(text):
     splitter = CharacterTextSplitter(
         separator="\n",
         chunk_size=1000,
@@ -42,9 +42,10 @@ def get_text_chunks(text):
     return splitter.split_text(text)
 
 # Create vectorstore using HuggingFace embeddings
-def get_vectorstore(chunks):
+def convert_chunks_to_vector_store(chunks):
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return FAISS.from_texts(texts=chunks, embedding=embeddings)
+
 
 # Create conversational retrieval chain
 def get_conversation_chain(vstore):
@@ -55,6 +56,7 @@ def get_conversation_chain(vstore):
         memory=memory,
     )
     return conversation_chain
+
 
 def handle_userinput(user_question):
     # Safely call the conversation object from session_state
@@ -73,18 +75,10 @@ def handle_userinput(user_question):
     for pair in reversed_pairs:
         for message in pair:
             if hasattr(message, "type") and message.type == "human":
-                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+                st.write(user_template.replace("{{MESSAGE}}", message.content), unsafe_allow_html=True)
             else:
-                st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+                st.write(bot_template.replace("{{MESSAGE}}", message.content), unsafe_allow_html=True)
 
-    
-    # for i, message in reversed(list(enumerate(st.session_state.chat_history))):
-    #     if i%2==0:
-    #         st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-    #     else:
-    #         st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-            
-    
    
 
 def main():
@@ -106,9 +100,7 @@ def main():
     if user_question:
         handle_userinput(user_question)
     
-   
-    # st.write(user_template.replace("{{MSG}}", "Hello robot 👋"), unsafe_allow_html=True)
-    # st.write(bot_template.replace("{{MSG}}", "Hello human 🤖"), unsafe_allow_html=True)
+
 
     with st.sidebar:
         st.subheader("Your Documents")
@@ -117,14 +109,14 @@ def main():
         if st.button("Process") and pdf_docs:
             with st.spinner("Processing..."):
                 # Get text
-                text = get_pdf_text(pdf_docs)
+                text = convert_pdf_text(pdf_docs)
 
                 # Get chunks
-                chunks = get_text_chunks(text)
+                chunks = convert_text_to_textChunk(text)
                 st.success("✅ Text Chunking Done")
 
                 # Vector store
-                vectorstore = get_vectorstore(chunks)
+                vectorstore = convert_chunks_to_vector_store(chunks)
                 st.success("✅ Vector Store Created")
 
                 # Conversation chain
