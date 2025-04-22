@@ -57,8 +57,33 @@ def get_conversation_chain(vstore):
     return conversation_chain
 
 def handle_userinput(user_question):
+    # Safely call the conversation object from session_state
+    if 'conversation' not in st.session_state:
+        st.error("Conversation object not found in session state.")
+        return
+    
     response = st.session_state.conversation({'question': user_question})
-    st.write(response)
+    st.session_state.chat_history = response['chat_history']
+    
+    # Reverse the chat history in user-bot pairs
+    chat_history = st.session_state.chat_history
+    pairs = [chat_history[i:i+2] for i in range(0, len(chat_history), 2)]
+    reversed_pairs = reversed(pairs)
+
+    for pair in reversed_pairs:
+        for message in pair:
+            if hasattr(message, "type") and message.type == "human":
+                st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            else:
+                st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
+    
+    # for i, message in reversed(list(enumerate(st.session_state.chat_history))):
+    #     if i%2==0:
+    #         st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+    #     else:
+    #         st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+            
     
    
 
@@ -70,6 +95,9 @@ def main():
     # Initialize session states
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
+    
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history= None
 
     if "vectorstore" not in st.session_state:
         st.session_state.vectorstore = None
@@ -79,8 +107,8 @@ def main():
         handle_userinput(user_question)
     
    
-    st.write(user_template.replace("{{MSG}}", "Hello robot 👋"), unsafe_allow_html=True)
-    st.write(bot_template.replace("{{MSG}}", "Hello human 🤖"), unsafe_allow_html=True)
+    # st.write(user_template.replace("{{MSG}}", "Hello robot 👋"), unsafe_allow_html=True)
+    # st.write(bot_template.replace("{{MSG}}", "Hello human 🤖"), unsafe_allow_html=True)
 
     with st.sidebar:
         st.subheader("Your Documents")
