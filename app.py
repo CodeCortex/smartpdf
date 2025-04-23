@@ -36,7 +36,7 @@ def convert_text_to_textChunk(text):
     splitter = CharacterTextSplitter(
         separator="\n",
         chunk_size=1000,
-        chunk_overlap=200,
+        chunk_overlap=250,
         length_function=len
     )
     return splitter.split_text(text)
