@@ -60,11 +60,12 @@ def get_conversation_chain(vstore):
 
 def handle_userinput(user_question):
     # Safely call the conversation object from session_state
-    if 'conversation' not in st.session_state:
-        st.error("Conversation object not found in session state.")
+    if st.session_state.conversation is None or st.session_state.vectorstore is None:
+        st.warning("⚠️ Please upload and process your PDF files first.")
         return
     
     response = st.session_state.conversation({'question': user_question})
+    
     st.session_state.chat_history = response['chat_history']
     
     # Reverse the chat history in user-bot pairs
