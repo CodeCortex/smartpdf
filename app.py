@@ -58,10 +58,45 @@ def get_conversation_chain(vstore):
     return conversation_chain
 
 
+def summarize_text(text):
+    prompt = f"""
+    You are a helpful assistant. Please summarize the following document in a short paragraph followed by bullet points that highlight the key points:
+
+    --- DOCUMENT START ---
+    {text}
+    --- DOCUMENT END ---
+
+    Summary:
+    """
+    response = llm.invoke(prompt)
+
+    lines = response.split("\n")
+    
+    # First line(s) could be empty, find the first non-empty line as summary paragraph
+    summary_paragraph = ""
+    bullet_points = []
+    
+    for line in lines:
+        line = line.strip()
+        if line:
+            if summary_paragraph == "":
+                summary_paragraph = line
+            else:
+                bullet_points.append(line)
+    
+    formatted_bullet_points = "\n".join(bullet_points)
+    
+    formatted_summary = f"{summary_paragraph}\n\n{formatted_bullet_points}"
+    
+    return formatted_summary
+
+
+
 def handle_userinput(user_question):
     # Safely call the conversation object from session_state
     if st.session_state.conversation is None or st.session_state.vectorstore is None:
-        st.warning("⚠️ Please upload and process your PDF files first.")
+        st.warning("Please upload and process your PDF files first.", icon="⚠️")
+
         return
     
     response = st.session_state.conversation({'question': user_question})
@@ -124,6 +159,19 @@ def main():
                 st.session_state.vectorstore = vectorstore
                 st.session_state.conversation = get_conversation_chain(vectorstore)
                 st.success("✅ Chat is Ready!")
+                
+        if st.button("Summarize") and pdf_docs:
+            with st.spinner("Summarizing..."):
+                text= convert_pdf_text(pdf_docs)
+                summary= summarize_text(text)
+                st.success("✅ Summary generated!")
+                st.markdown(f"📄 **Summary:**\n\n{summary}")
+
+        
+        # Placeholder for MCP Server / Playwright usage
+        st.markdown("---")
+        st.info("🚀 Playwright MCP automation coming soon...")
+
 
   
 
