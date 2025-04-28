@@ -126,11 +126,15 @@ def main():
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     
+    if "summary" not in st.session_state:
+        st.session_state.summary= None
+    
     if "chat_history" not in st.session_state:
         st.session_state.chat_history= None
 
     if "vectorstore" not in st.session_state:
         st.session_state.vectorstore = None
+        
         
     user_question = st.text_input("Ask a question about your documents:")
     if user_question:
@@ -164,8 +168,15 @@ def main():
             with st.spinner("Summarizing..."):
                 text= convert_pdf_text(pdf_docs)
                 summary= summarize_text(text)
+                st.session_state.summary= summary
                 st.success("✅ Summary generated!")
-                st.markdown(f"📄 **Summary:**\n\n{summary}")
+                
+        if st.session_state.summary:
+            st.markdown(f"📄 **Summary:**\n\n{st.session_state.summary}")
+                
+        
+        
+
 
         
         # Placeholder for MCP Server / Playwright usage
