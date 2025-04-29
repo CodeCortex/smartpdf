@@ -10,6 +10,7 @@ cachetools==5.5.2
 certifi==2025.1.31
 charset-normalizer==3.4.1
 click==8.1.8
+cmudict==1.0.32
 dataclasses-json==0.6.7
 distro==1.9.0
 faiss-cpu==1.10.0
@@ -26,6 +27,7 @@ google-auth==2.38.0
 google-auth-httplib2==0.2.0
 google-generativeai==0.8.4
 googleapis-common-protos==1.69.2
+greenlet==3.2.1
 grpcio==1.71.0
 grpcio-status==1.71.0
 h11==0.14.0
@@ -35,6 +37,8 @@ httpx==0.28.1
 httpx-sse==0.4.0
 huggingface-hub==0.30.1
 idna==3.10
+importlib_metadata==8.7.0
+importlib_resources==6.5.2
 InstructorEmbedding==1.0.1
 Jinja2==3.1.6
 jiter==0.9.0
@@ -65,6 +69,7 @@ orjson==3.10.16
 packaging==24.2
 pandas==2.2.3
 pillow==11.1.0
+playwright==1.51.0
 propcache==0.3.1
 proto-plus==1.26.1
 protobuf==5.29.4
@@ -75,8 +80,10 @@ pydantic==2.11.1
 pydantic-settings==2.8.1
 pydantic_core==2.33.0
 pydeck==0.9.1
+pyee==12.1.1
 pyparsing==3.2.3
 PyPDF2==3.0.1
+pyphen==0.17.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 pytz==2025.2
@@ -115,4 +122,5 @@ tzdata==2025.2
 uritemplate==4.1.1
 urllib3==2.3.0
 yarl==1.18.3
+zipp==3.21.0
 zstandard==0.23.0
